@@ -19,12 +19,16 @@ public class ShoppingListServlet extends HttpServlet {
         doEverything(request, response);
     }
     
-    protected void doEverything(HttpServletRequest request, HttpServletResponse responce) throws ServletException, IOException{
+    protected void doEverything(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         HttpSession session = request.getSession();
         
-        String action = (String) session.getAttribute("action");
+        String action = (String) request.getParameter("action");
         
-        ArrayList<String> listItems = new ArrayList<>();
+        ArrayList<String> listItems = (ArrayList) session.getAttribute("listItems");
+        
+        if (listItems == null){
+            listItems = new ArrayList<>();
+        }
         
         if (action == null){
             action = "";
@@ -41,11 +45,19 @@ public class ShoppingListServlet extends HttpServlet {
             case "add":
                 String item = request.getParameter("newItem");
                 listItems.add(item);
+                session.setAttribute("listItems", listItems);
                 break;
             case "delete":
-                String deleteItem = request.getParameter("deleteItem");
+                String deleteItem = request.getParameter("selectItem");
                 listItems.remove(deleteItem);
+                session.setAttribute("listItems", listItems);
                 break;
+        }
+        
+        if (session.getAttribute("username") == null){
+            getServletContext().getRequestDispatcher("/WEB-INF/register.jsp").forward(request, response);
+        } else{
+            getServletContext().getRequestDispatcher("/WEB-INF/shoppingList.jsp").forward(request, response);
         }
     }
 }
