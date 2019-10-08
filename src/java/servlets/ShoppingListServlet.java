@@ -37,7 +37,8 @@ public class ShoppingListServlet extends HttpServlet {
         switch (action){
             case "logout":
                 session.invalidate();
-                break;
+                response.sendRedirect("ShoppingList");
+                return;
             case "register":
                 String username = request.getParameter("username");
                 session.setAttribute("username", username);
